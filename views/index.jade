@@ -1,0 +1,61 @@
+extends layout
+
+block content
+  h1= title
+  script(type='text/javascript')
+      | function onLoad() {
+      |    if (#{dhcp}) {
+      |     document.getElementById('chk_dhcp').setAttribute("checked", "checked");
+      |     dhcp_check_changed();}
+      | }
+      | function dhcp_check_changed()
+      | {
+      |   var checked = document.getElementById('chk_dhcp').checked;
+      |   if ( checked == true ) {
+      |     document.getElementById('txt_ip_address').setAttribute("disabled","disabled");
+      |     document.getElementById('txt_ip_subnet').setAttribute("disabled","disabled");
+      |     document.getElementById('txt_routers').setAttribute("disabled","disabled");
+      |     document.getElementById('txt_dns').setAttribute("disabled","disabled");
+      |   } else {
+      |     document.getElementById('txt_ip_address').removeAttribute("disabled");
+      |     document.getElementById('txt_ip_subnet').removeAttribute("disabled");
+      |     document.getElementById('txt_routers').removeAttribute("disabled");
+      |     document.getElementById('txt_dns').removeAttribute("disabled");
+      |   }
+      | }
+  p Welcome to #{title}
+
+  if errors
+    .alert(class="alert-danger", role="alert", id="error-group")
+      - console.log(errors)
+      ul
+        for error in errors
+          li #{error.msg} in #{error.param}
+
+
+  form.form-horizontal(role="form", name="edit-ip", method="post",onsubmit="return confirm('Are you sure? System will reboot if so.');")
+    div.form-group
+        div.col-lg-offset-3.col-lg-9
+            div.checkbox
+                label
+                    input(type="checkbox", name="chk_dhcp", id="chk_dhcp", onchange="dhcp_check_changed();")
+                    | DHCP
+    div.form-group
+        label.col-lg-3.control-label(for="txt_ip_address") Static IP
+        div.col-lg-9
+            input#txt_ip_address.form-control(type="text", name="txt_ip_address", value="#{ip_address}", placeholder="Enter IP")
+    div.form-group
+        label.col-lg-3.control-label(for="txt_ip_subnet") Subnet mask
+        div.col-lg-9
+            input#txt_ip_subnet.form-control(type="text", name="txt_ip_subnet", value="#{ip_subnet}", placeholder="Enter subnet")
+    div.form-group
+        label.col-lg-3.control-label(for="txt_routers") Gateway
+        div.col-lg-9
+            input#txt_routers.form-control(type="text", name="txt_routers", value="#{routers}", placeholder="Enter gateway")
+    div.form-group
+        label.col-lg-3.control-label(for="txt_dns") DNS
+        div.col-lg-9
+            input#txt_dns.form-control(type="text", name="txt_dns", value="#{domain_name_servers}", placeholder="Enter DNS (space separated)")
+    div.form-group
+        div.col-lg-offset-3.col-lg-9
+            button.btn.btn-default(type="submit", value="Submit") Submit
